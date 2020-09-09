@@ -48,17 +48,28 @@ make
 make install
 
 rm /etc/my.cnf -rf
-echo "[mysqld]
-socket 	= /tmp/mysqld_mysql51.sock
-port	= 3307
-bind-address = 0.0.0.0	
+echo "
+[mysqld]
+socket  = /tmp/mysqld_mysql51.sock
+port    = 3307
+bind-address = 0.0.0.0
 #skip-networking
-basedir = /usr/local/$INSDIR
-datadir = $MDATA/data
+basedir = /usr/local/mysql51
+datadir = /data/mysql/MYSQL51/data
+pid-file = /usr/local/mysql51/mysql51.pid
+relay_log = /data/mysql/MYSQL51/log/mysql-relay
 expire-logs-days=2
-long_query_time=3
-log_bin=$MDATA/log/mysql-bin
-server-id=1
+log-error= /data/mysql/MYSQL51/log/mysql-error.log
+slow_query_log = 1
+log-slow-queries = /data/mysql/MYSQL51/log/mysql-slow.log
+long_query_time = 2
+log_bin=/data/mysql/MYSQL51/log/mysql-bin
+server-id=2
+log-slave-updates
+master-info-file = /data/mysql/MYSQL51/log/master.info
+relay_log_info_file = /data/mysql/MYSQL51/log/relay-log.info
+relay_log_purge=1
+
 "> /usr/local/$INSDIR/my.cnf
 
 ./scripts/mysql_install_db --user=mysql --datadir=$MDATA/data
@@ -72,6 +83,7 @@ chkconfig $INSDIR on
 rm -rf /usr/bin/$INSDIR
 ln -s /usr/local/$INSDIR/bin/mysql /usr/bin/$INSDIR
 
+touch /usr/local/mysql51/mysql51.pid
 cd /usr/local
 chown -R mysql.mysql $INSDIR -R
 chown -R mysql.mysql $MDATA
